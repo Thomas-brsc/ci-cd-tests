@@ -24,5 +24,3 @@ jobs:
         with:
           serviceId: srv-d5pi9o7gi27c73fo7s60
           apiKey: rnd_tkgjClP1l9kj5GiEAef0qeCGWTU3
-          node-version: lts/Jod #optional
-          cli-version: 2.2.0 #optional
