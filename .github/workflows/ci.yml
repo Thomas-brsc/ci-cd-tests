@@ -19,7 +19,8 @@ jobs:
       - run: npm run lint
       - run: npm test
       
-      - name: Create deployment
+    deploy:
+        runs-on: ubuntu-latest
         uses: sws2apps/render-deployment@main #consider using pin for dependabot auto update
         with:
           serviceId: srv-d5pi9o7gi27c73fo7s60
