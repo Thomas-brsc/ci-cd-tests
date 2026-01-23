@@ -1,8 +1,9 @@
 name: Ma premiere CI
 
-on: 
+on:
   push:
-    branches: [main]
+    tags:
+      - 'dev-*'
 
 jobs:
   build:
