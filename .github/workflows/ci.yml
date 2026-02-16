@@ -43,16 +43,18 @@ jobs:
           projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
           serviceName: "production"
 
-  notify:                             # <-- Job séparé, aligné avec les autres jobs
+  notify:
     runs-on: ubuntu-latest
-    needs: [deploy-dev, deploy-prod]  # attend que les jobs précédents se terminent
-    if: always()                       # s’exécute même si un job précédent échoue
+    needs: [deploy-dev, deploy-prod]
+    if: always()   # s’exécute même si les jobs précédents échouent
     steps:
       - name: Discord notification
         uses: peter-evans/discord-webhook@v1
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}   # ton secret contenant l’URL Discord
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
           message: |
+            Test ci/cd
+            APP
             🛠️ Build terminé
             Repo : ${{ github.repository }}
             Ref : ${{ github.ref_name }}
