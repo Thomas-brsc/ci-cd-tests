@@ -1,4 +1,4 @@
- 
+
 // Permet de charger le module express
 const express = require('express')
 // Crée un router pour les routes de l'API
@@ -13,4 +13,9 @@ router.get('/time', (req, res) => {
 })
 // Exporte le router pour être utilisé dans l'application
 module.exports = router
- 
+
+router.get('/welcome', (req, res) => {
+    const name = req.query.name || 'Visiteur'
+    // VULNÉRABILITÉ : On renvoie l'input utilisateur sans filtrage
+    res.send(`<h1>Bienvenue, ${name}</h1>`)
+})
