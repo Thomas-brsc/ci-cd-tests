@@ -1,4 +1,4 @@
-name: Ma première CI/CD
+name: CI/CD Dev + Prod + Discord
 
 on:
   push:
@@ -33,18 +33,15 @@ jobs:
     runs-on: ubuntu-latest
     if: always()   # s'exécute même si deploy échoue
     steps:
-      - name: Envoyer notif Discord
+      - name: Discord notification
         run: |
-          # Récupère le statut du job deploy
-          STATUS="🛠️ Build terminé impeccable"
-          if [ "${{ needs.deploy.result }}" != "success" ]; then
-            STATUS="❌ Pipeline FAILED ! Vérifiez les logs."
-          fi
+          # Définition du message
+          STATUS="🛠️ Build terminé"
 
           # Envoi via curl
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\":\"Test ci/cd\nAPP\n$STATUS\nRepo : $GITHUB_REPOSITORY\nRef : $GITHUB_REF_NAME\"}" \
+               -d "{\"content\":\"$STATUS\nRepo : $GITHUB_REPOSITORY\nRef : $GITHUB_REF_NAME\"}" \
                ${{ secrets.DISCORD_WEBHOOK }}
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
