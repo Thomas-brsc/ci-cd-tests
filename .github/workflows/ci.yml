@@ -44,12 +44,11 @@ jobs:
           serviceName: "production"
 
       - name: Discord notification
-        uses: Ilshidur/action-discord@master
-        env:
-          # Change vars. → secrets.
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: |
-            Repository : ${{ github.repository }}
-            Ref  : ${{ github.ref_name }}
-            Build terminé ⚡
+  uses: peter-evans/discord-webhook@v1
+  with:
+    webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+    message: |
+      Repository : ${{ github.repository }}
+      Ref : ${{ github.ref_name }}
+      Build terminé ⚡
+
