@@ -1,61 +1,60 @@
-name: CI/CD Dev + Prod + Discord
+name: Ma première CI/CD
 
 on:
   push:
-    tags:
-      - 'dev-*'
-      - 'prod-*'
+    branches: [main]
 
 jobs:
-  build:                      
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      # Récupération du dépôt
+      - uses: actions/checkout@v3
+
+      # Installation de Node.js 20
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
+          node-version: 20.x
           cache: 'npm'
-      - run: npm install
+
+      # Installation des dépendances
+      - run: npm ci
+
+      # Lint
       - run: npm run lint
+
+      # Tests
       - run: npm test
 
-  deploy-dev:                  
-    if: startsWith(github.ref, 'refs/tags/dev-')
-    runs-on: ubuntu-latest
-    needs: build               
-    steps:
-      - name: Deploy to Render
-        uses: ttskch/render-deploy@v1.0.0
-        with:
-          apiKey: ${{ secrets.RENDER_API_KEY }}
-          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
-
-  deploy-prod:
-    if: startsWith(github.ref, 'refs/tags/prod-')
-    runs-on: ubuntu-latest
+  deploy:
     needs: build
+    runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Railway
-        uses: railwayapp/railway-action@v1
+      - name: Deploy sur Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
         with:
-          apiKey: ${{ secrets.RAILWAY_API_KEY }}
-          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
-          serviceName: "production"
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.API_KEY }}
 
-      
-      # --- NOTIFICATION EN CAS D'ÉCHEC ---
-      - name: Notification d'échec (Discord)
-        if: failure()
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()  # s'exécute même si le build ou deploy échoue
+    steps:
+      - name: Discord notification
         run: |
-          # --- TP Part 5 : La Boucle de Rétroaction (Feedback) ---
-          echo "### ❌ Échec de la Pipeline de Sécurité" >> $GITHUB_STEP_SUMMARY
+          # Détecte le succès ou l'échec du job deploy
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            STATUS="🛠️ Build terminé impeccable"
+          else
+            STATUS="❌ Pipeline FAILED ! Vérifiez les logs."
+          fi
 
-          # Envoi d'un Webhook Discord
-          # Les étudiants doivent créer un Webhook dans Discord et l'ajouter en secret : DISCORD_WEBHOOK
+          echo "Envoi de la notification Discord: $STATUS"
+
+          # Envoi via curl
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\": \"Ça marche pas !!!!!!\"}" \
+               -d '{"content":"Test ci/cd\nAPP\n'"$STATUS"'\nRepo : '${{ github.repository }}'\nRef : '${{ github.ref_name }}'"}' \
                ${{ secrets.DISCORD_WEBHOOK }}
-
- 
