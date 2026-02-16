@@ -44,12 +44,11 @@ jobs:
           serviceName: "production"
 
       - name: Discord notification
-        uses: Ilshidur/action-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: |
-            Repository : ${{ github.repository }}
-            Ref  : ${{ github.ref_name }}
-            Build terminé
- 
+  uses: Ilshidur/action-discord@master
+  env:
+    DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+  with:
+    args: |
+      Repository : ${{ github.repository }}
+      Ref  : ${{ github.ref_name }}
+      Build terminé
