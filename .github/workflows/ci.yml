@@ -46,7 +46,8 @@ jobs:
       - name: Notify Discord on failure
   if: failure()   # ne s’exécute que si un job précédent échoue
   run: |
-    echo "Un job a échoué !"
+    echo "### Echec de la Pipeline de Sécurité" >> $GITHUB_STEP_SUMMARY
+    echo "Une vulnérabilités ou un bug a été détecté. Vérifiez les logs SAST/SCA." >> $GITHUB_STEP_SUMMARY
     curl -H "Content-Type: application/json" \
          -X POST \
          -d "{\"content\":\"❌ Pipeline FAILED ! Vérifiez les vulnérabilités.\nRepo: ${{ github.repository }}\nRef: ${{ github.ref_name }}\"}" \
