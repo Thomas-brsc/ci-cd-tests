@@ -43,13 +43,19 @@ jobs:
           projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
           serviceName: "production"
 
-      - name: Notify Discord on failure
-  if: failure()   # s’exécute uniquement si un job précédent échoue
-  run: |
-    echo "### Echec de la Pipeline de Sécurité" >> $GITHUB_STEP_SUMMARY
-    echo "Une vulnérabilités ou un bug a été détecté. Vérifiez les logs SAST/SCA." >> $GITHUB_STEP_SUMMARY
+      
+      # --- NOTIFICATION EN CAS D'ÉCHEC ---
+      - name: Notification d'échec (Discord)
+        if: failure()
+        run: |
+          # --- TP Part 5 : La Boucle de Rétroaction (Feedback) ---
+          echo "### ❌ Échec de la Pipeline de Sécurité" >> $GITHUB_STEP_SUMMARY
 
-    curl -H "Content-Type: application/json" \
-         -X POST \
-         -d '{"content":"ça marche pas omg !"}' \
-         ${{ secrets.DISCORD_WEBHOOK }}
+          # Envoi d'un Webhook Discord
+          # Les étudiants doivent créer un Webhook dans Discord et l'ajouter en secret : DISCORD_WEBHOOK
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{\"content\": \"Ça marche pas !!!!!!\"}" \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+ 
